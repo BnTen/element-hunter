@@ -21,7 +21,7 @@ export function ScansList({ scans }: ScansListProps) {
     <div className="border rounded-lg p-6 bg-white shadow-md">
       <h2 className="text-xl font-semibold mb-2">SEO Scans</h2>
       <p className="text-gray-600 mb-4">
-        Vos derniers scans envoyés par l'extension Chrome
+        Vos derniers scans envoyés par l&apos;extension Chrome
       </p>
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
@@ -48,8 +48,8 @@ export function ScansList({ scans }: ScansListProps) {
             {scans.length === 0 && (
               <tr>
                 <td colSpan={5} className="text-center text-gray-400 py-4">
-                  Aucun scan pour l'instant. Utilisez l'extension Chrome pour en
-                  ajouter.
+                  Aucun scan pour l&apos;instant. Utilisez l&apos;extension
+                  Chrome pour en ajouter.
                 </td>
               </tr>
             )}
