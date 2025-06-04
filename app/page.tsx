@@ -96,7 +96,7 @@ export default async function Home() {
             </h1>
           </div>
           <p className="text-lg text-muted-foreground text-center max-w-2xl">
-            Analyze, optimize, and monitor your website's SEO at a glance.
+            Analyze, optimize, and monitor your website&apos;s SEO at a glance.
           </p>
         </header>
 
@@ -155,9 +155,11 @@ export default async function Home() {
                       <div className="flex items-center gap-4 px-6 pb-2">
                         <div className="flex-shrink-0">
                           {favicon ? (
-                            <img
+                            <Image
                               src={favicon}
                               alt="Favicon"
+                              width={40}
+                              height={40}
                               className="w-10 h-10 rounded-lg border shadow object-cover bg-white"
                             />
                           ) : (

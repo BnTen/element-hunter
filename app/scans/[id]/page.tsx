@@ -140,9 +140,11 @@ export default async function ScanDetailPage({ params }: PageProps) {
       <header className="max-w-4xl mx-auto px-4 flex flex-col md:flex-row items-center gap-6 py-8">
         <div className="flex-shrink-0">
           {favicon ? (
-            <img
+            <Image
               src={favicon}
               alt="Favicon"
+              width={64}
+              height={64}
               className="w-16 h-16 rounded-xl border shadow object-cover bg-white"
             />
           ) : (
@@ -267,7 +269,7 @@ export default async function ScanDetailPage({ params }: PageProps) {
         <Card>
           <CardHeader>
             <CardTitle>Strengths</CardTitle>
-            <CardDescription>What's well optimized</CardDescription>
+            <CardDescription>What&apos;s well optimized</CardDescription>
           </CardHeader>
           <CardContent>
             {strengths.length === 0 ? (
