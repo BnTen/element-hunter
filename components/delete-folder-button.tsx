@@ -2,18 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { TrashIcon } from "lucide-react";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { Trash2Icon } from "lucide-react";
+import { toast } from "sonner";
 
 interface DeleteFolderButtonProps {
   folderId: string;
@@ -24,51 +15,40 @@ export function DeleteFolderButton({ folderId }: DeleteFolderButtonProps) {
   const router = useRouter();
 
   const handleDelete = async () => {
+    if (!confirm("Êtes-vous sûr de vouloir supprimer ce dossier ?")) {
+      return;
+    }
+
+    setIsLoading(true);
+
     try {
-      setIsLoading(true);
       const response = await fetch(`/api/seo/folders/${folderId}`, {
         method: "DELETE",
       });
 
-      if (!response.ok) throw new Error("Failed to delete folder");
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Une erreur est survenue");
+      }
 
+      toast.success("Dossier supprimé avec succès");
       router.refresh();
     } catch {
-      // Error handled by UI state
+      toast.error("Erreur lors de la suppression du dossier");
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <button
-          className="p-2 text-gray-400 hover:text-red-500 transition-colors rounded-full hover:bg-red-50"
-          disabled={isLoading}
-        >
-          <TrashIcon className="w-4 h-4" />
-        </button>
-      </AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Delete Folder</AlertDialogTitle>
-          <AlertDialogDescription>
-            Are you sure you want to delete this folder? This action cannot be
-            undone.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction
-            onClick={handleDelete}
-            className="bg-red-500 hover:bg-red-600"
-            disabled={isLoading}
-          >
-            {isLoading ? "Deleting..." : "Delete"}
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={handleDelete}
+      disabled={isLoading}
+      className="text-red-500 hover:text-red-700 hover:bg-red-50"
+    >
+      <Trash2Icon className="h-4 w-4" />
+    </Button>
   );
 }

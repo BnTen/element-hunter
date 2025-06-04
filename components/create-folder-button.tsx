@@ -2,92 +2,85 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { PlusIcon } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { PlusIcon } from "lucide-react";
+import { toast } from "sonner";
 
 export function CreateFolderButton() {
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [folderName, setFolderName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!folderName.trim()) return;
+    setIsLoading(true);
 
     try {
-      setIsLoading(true);
-      const response = await fetch("/api/seo/folders", {
+      const response = await fetch("/api/seo/folders/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name: folderName.trim() }),
+        body: JSON.stringify({ name: folderName }),
       });
 
-      if (!response.ok) throw new Error("Failed to create folder");
+      const data = await response.json();
 
-      setIsOpen(false);
+      if (!response.ok) {
+        throw new Error(data.error || "Une erreur est survenue");
+      }
+
+      toast.success("Dossier créé avec succès");
       setFolderName("");
+      setIsOpen(false);
       router.refresh();
     } catch {
-      // Error handled by UI state
+      toast.error("Erreur lors de la création du dossier");
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button
-          variant="outline"
-          className="bg-white hover:bg-gray-50 border-dashed"
-          disabled={isLoading}
+    <div className="relative">
+      <Button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center gap-2"
+      >
+        <PlusIcon className="h-4 w-4" />
+        Nouveau dossier
+      </Button>
+
+      {isOpen && (
+        <form
+          onSubmit={handleSubmit}
+          className="absolute top-full left-0 mt-2 p-4 bg-white rounded-lg shadow-lg border border-gray-200 w-64"
         >
-          <PlusIcon className="w-4 h-4 mr-2" />
-          Nouveau dossier
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Créer un dossier</DialogTitle>
-          <DialogDescription>
-            Donnez un nom à votre nouveau dossier de scans.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">Nom du dossier</Label>
-            <Input
-              id="name"
-              value={folderName}
-              onChange={(e) => setFolderName(e.target.value)}
-              placeholder="Mon dossier"
-            />
+          <Input
+            type="text"
+            placeholder="Nom du dossier"
+            value={folderName}
+            onChange={(e) => setFolderName(e.target.value)}
+            className="mb-2"
+            required
+          />
+          <div className="flex justify-end gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsOpen(false)}
+              disabled={isLoading}
+            >
+              Annuler
+            </Button>
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? "Création..." : "Créer"}
+            </Button>
           </div>
-        </div>
-        <DialogFooter>
-          <Button
-            type="submit"
-            onClick={handleSubmit}
-            disabled={!folderName.trim() || isLoading}
-          >
-            {isLoading ? "Création..." : "Créer"}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </form>
+      )}
+    </div>
   );
 }

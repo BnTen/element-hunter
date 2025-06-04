@@ -1,22 +1,21 @@
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { NextRequest } from "next/server";
 
-type Props = {
+interface RouteSegmentProps {
   params: {
     folderId: string;
   };
-};
+}
 
-export async function DELETE(request: NextRequest, props: Props) {
+export async function DELETE(request: Request, { params }: RouteSegmentProps) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user) {
       return new Response("Unauthorized", { status: 401 });
     }
 
-    const { folderId } = props.params;
+    const { folderId } = params;
     if (!folderId) {
       return new Response("Folder ID is required", { status: 400 });
     }
