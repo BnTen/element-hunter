@@ -33,7 +33,7 @@ export function DeleteFolderButton({ folderId }: DeleteFolderButtonProps) {
       if (!response.ok) throw new Error("Failed to delete folder");
 
       router.refresh();
-    } catch (error) {
+    } catch {
       // Error handled by UI state
     } finally {
       setIsLoading(false);

@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
-import { FolderIcon, PlusIcon, LinkIcon } from "lucide-react";
+import { FolderIcon, LinkIcon } from "lucide-react";
 import { AddScansToFolder } from "@/components/add-scans-to-folder";
 import { DeleteFolderButton } from "@/components/delete-folder-button";
 import { CreateFolderButton } from "@/components/create-folder-button";

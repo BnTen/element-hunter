@@ -19,7 +19,7 @@ import { Label } from "@/components/ui/label";
 interface Scan {
   id: string;
   url: string;
-  data: any;
+  data: Record<string, unknown>;
 }
 
 interface AddScansToFolderProps {
@@ -45,7 +45,7 @@ export function AddScansToFolder({ folderId }: AddScansToFolderProps) {
       if (!response.ok) throw new Error("Failed to fetch scans");
       const data = await response.json();
       setAvailableScans(data);
-    } catch (error) {
+    } catch {
       // Error handled by UI state
     }
   };
@@ -71,7 +71,7 @@ export function AddScansToFolder({ folderId }: AddScansToFolderProps) {
       setIsOpen(false);
       setSelectedScans([]);
       router.refresh();
-    } catch (error) {
+    } catch {
       // Error handled by UI state
     } finally {
       setIsLoading(false);

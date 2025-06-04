@@ -41,7 +41,7 @@ export function CreateFolderButton() {
       setIsOpen(false);
       setFolderName("");
       router.refresh();
-    } catch (error) {
+    } catch {
       // Error handled by UI state
     } finally {
       setIsLoading(false);
