@@ -30,6 +30,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { calculateSEOScore, getIssues } from "@/lib/seo-utils";
 import type { ScanData } from "@/types/scan";
+import Image from "next/image";
 
 interface PageProps {
   params: {
@@ -494,9 +495,11 @@ export default async function ScanDetailPage({ params }: PageProps) {
                             )}
                           >
                             <div className="aspect-video relative mb-3 rounded-lg overflow-hidden bg-muted">
-                              <img
+                              <Image
                                 src={image.src}
                                 alt={image.alt || "No alt text"}
+                                width={image.width}
+                                height={image.height}
                                 className="object-cover w-full h-full"
                               />
                             </div>

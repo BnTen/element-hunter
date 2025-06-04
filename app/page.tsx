@@ -7,6 +7,7 @@ import { ClipboardIcon, GlobeIcon } from "lucide-react";
 import { CopyButton } from "@/components/ui/copy-button";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 interface ScanData {
   meta?: {
