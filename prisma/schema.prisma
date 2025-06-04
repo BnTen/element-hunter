@@ -14,11 +14,14 @@ datasource db {
 }
 
 model User {
-  id       String  @id @default(cuid())
+  id       String    @id @default(cuid())
   name     String?
-  email    String  @unique
+  email    String    @unique
   password String
+  apiToken String    @unique @default(uuid())
   posts    Post[]
+  scans    SeoScan[]
+  folders  ScanFolder[]
 }
 
 model Post {
@@ -30,4 +33,38 @@ model Post {
   published Boolean  @default(false)
   authorId  String?
   author    User?    @relation(fields: [authorId], references: [id])
+}
+
+model SeoScan {
+  id        String   @id @default(cuid())
+  url       String
+  data      Json     // Stockage de toutes les données JSON
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  folders   ScanFolderOnScan[]
+
+  @@index([userId])
+  @@index([createdAt])
+  @@index([url])
+}
+
+model ScanFolder {
+  id        String    @id @default(cuid())
+  name      String
+  user      User      @relation(fields: [userId], references: [id])
+  userId    String
+  scans     ScanFolderOnScan[]
+  createdAt DateTime  @default(now())
+}
+
+model ScanFolderOnScan {
+  scanFolder   ScanFolder @relation(fields: [scanFolderId], references: [id])
+  scanFolderId String
+  seoScan      SeoScan    @relation(fields: [seoScanId], references: [id])
+  seoScanId    String
+
+  assignedAt   DateTime   @default(now())
+
+  @@id([scanFolderId, seoScanId])
 }

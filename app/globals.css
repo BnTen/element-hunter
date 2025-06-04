@@ -2,20 +2,109 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* Couleurs de base */
+    --background: 210 40% 98%; /* #f8fafc - Plus doux */
+    --foreground: 215 25% 27%; /* #334155 */
+
+    /* Couleurs de carte */
+    --card: 0 0% 100%; /* #ffffff */
+    --card-foreground: 215 25% 27%; /* #334155 */
+
+    /* Couleurs de popover */
+    --popover: 0 0% 100%; /* #ffffff */
+    --popover-foreground: 215 25% 27%; /* #334155 */
+
+    /* Couleurs primaires (Rouge plus doux) */
+    --primary: 0 85% 65%; /* Un rouge plus doux */
+    --primary-hover: 0 85% 70%; /* Hover plus doux */
+    --primary-foreground: 0 0% 100%; /* #ffffff */
+
+    /* Couleurs secondaires */
+    --secondary: 210 40% 96.1%; /* #f1f5f9 */
+    --secondary-foreground: 222 47% 11%; /* #0f172a */
+
+    /* Couleurs atténuées */
+    --muted: 210 40% 96.1%; /* #f1f5f9 */
+    --muted-foreground: 215 20% 65%; /* #64748b - Plus doux */
+
+    /* Couleurs d'accent (Bleu plus doux) */
+    --accent: 217 91% 60%; /* #3b82f6 */
+    --accent-hover: 217 91% 65%; /* Plus doux */
+    --accent-foreground: 0 0% 100%; /* #ffffff */
+
+    /* Couleurs destructives */
+    --destructive: 0 75% 60%; /* Rouge plus doux */
+    --destructive-foreground: 210 40% 98%; /* #f8fafc */
+
+    /* Couleurs de succès et warning */
+    --success: 142 72% 45%; /* Vert plus doux */
+    --warning: 35 85% 55%; /* Orange plus doux */
+
+    /* Couleurs de bordure et input */
+    --border: 214 32% 91%; /* #e2e8f0 */
+    --input: 214 32% 91%; /* #e2e8f0 */
+    --ring: 215 25% 27%; /* #334155 */
+
+    /* Couleurs des catégories (toutes adoucies) */
+    --cat-frameworks: 221 70% 60%; /* Bleu plus doux */
+    --cat-ui: 302 70% 55%; /* Rose plus doux */
+    --cat-analytics: 162 70% 40%; /* Vert plus doux */
+    --cat-marketing: 24 75% 55%; /* Orange plus doux */
+    --cat-cms: 245 65% 60%; /* Violet plus doux */
+    --cat-ecommerce: 0 70% 55%; /* Rouge plus doux */
+    --cat-hosting: 142 65% 45%; /* Vert plus doux */
+    --cat-video: 201 75% 45%; /* Bleu plus doux */
+    --cat-js: 35 75% 50%; /* Jaune plus doux */
+    --cat-web: 255 70% 65%; /* Violet plus doux */
+    --cat-security: 346 70% 50%; /* Rouge plus doux */
+    --cat-fonts: 273 70% 60%; /* Violet plus doux */
+    --cat-maps: 173 70% 40%; /* Turquoise plus doux */
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222 47% 11%; /* #0f172a */
+    --foreground: 210 40% 98%; /* #f8fafc */
+
+    --card: 222 47% 11%; /* #0f172a */
+    --card-foreground: 210 40% 98%; /* #f8fafc */
+
+    --popover: 222 47% 11%; /* #0f172a */
+    --popover-foreground: 210 40% 98%; /* #f8fafc */
+
+    /* Couleurs primaires en mode sombre (plus douces) */
+    --primary: 0 85% 65%; /* Rouge plus doux */
+    --primary-hover: 0 85% 70%; /* Hover plus doux */
+    --primary-foreground: 0 0% 100%; /* #ffffff */
+
+    /* Accent en mode sombre (plus doux) */
+    --secondary: 217 91% 60%; /* Bleu plus doux */
+    --secondary-foreground: 210 40% 98%; /* #f8fafc */
+
+    --muted: 217 91% 60%; /* Bleu plus doux */
+    --muted-foreground: 215 20% 65%; /* Gris plus doux */
+
+    --accent: 217 91% 60%; /* Bleu plus doux */
+    --accent-hover: 217 91% 65%; /* Hover plus doux */
+    --accent-foreground: 0 0% 100%; /* #ffffff */
+
+    --destructive: 0 75% 60%; /* Rouge plus doux */
+    --destructive-foreground: 210 40% 98%; /* #f8fafc */
+
+    --border: 214 32% 91%; /* #e2e8f0 */
+    --input: 214 32% 91%; /* #e2e8f0 */
+    --ring: 215 25% 27%; /* #334155 */
   }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }

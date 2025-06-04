@@ -9,7 +9,7 @@ export const authOptions = {
       name: "credentials",
       credentials: {
         email: { label: "Email", type: "email" },
-        name: { label: "Name", type: "name" },
+        name: { label: "Name", type: "text" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
@@ -46,13 +46,25 @@ export const authOptions = {
   ],
   pages: {
     signIn: "/login",
+    error: "/login",
   },
   callbacks: {
     async jwt({ token, user }) {
-      return { ...token, id: token.id ?? user?.id };
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
     },
     async session({ session, token }) {
-      return { ...session, user: { ...session.user, id: token.id } };
+      if (session.user) {
+        session.user.id = token.id as string;
+      }
+      return session;
     },
   },
+  session: {
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+  secret: process.env.NEXTAUTH_SECRET,
 } satisfies NextAuthOptions;

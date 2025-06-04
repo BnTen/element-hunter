@@ -1,0 +1,46 @@
+{
+  "info": {
+    "_postman_id": "seo-api-collection-001",
+    "name": "SEO API Test",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "POST /api/seo (Add Scan)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{api_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"url\": \"https://exemple.com\",\n  \"title\": \"Titre de la page\",\n  \"metaDescription\": \"Description SEO\",\n  \"h1\": \"Mon H1 principal\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/seo",
+          "host": ["{{base_url}}"],
+          "path": ["api", "seo"]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "api_token",
+      "value": "VOTRE_TOKEN_ICI"
+    }
+  ]
+}
