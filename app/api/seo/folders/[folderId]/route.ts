@@ -1,14 +1,12 @@
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { NextRequest } from "next/server";
 
-interface RouteSegmentProps {
-  params: {
-    folderId: string;
-  };
-}
-
-export async function DELETE(request: Request, { params }: RouteSegmentProps) {
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { folderId: string } }
+) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user) {
