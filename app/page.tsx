@@ -96,7 +96,9 @@ export default async function Home() {
             </h1>
           </div>
           <p className="text-lg text-muted-foreground text-center max-w-2xl">
-            Analyze, optimize, and monitor your website&apos;s SEO at a glance.
+            We are a powerful and intuitive Chrome extension that instantly
+            scans any web page to deliver a comprehensive technical, SEO, and
+            content analysis all in a single click.
           </p>
         </header>
 
@@ -109,7 +111,8 @@ export default async function Home() {
             </h2>
           </div>
           <p className="text-muted-foreground mb-4 text-center">
-            Use this token in your Chrome extension to scan your web pages.
+            Use this token in your <b> Chrome extension </b> to scan your <br />{" "}
+            web pages and save it into your dashboard.
           </p>
           <div className="flex items-center gap-2 bg-secondary/70 p-4 rounded-xl w-full justify-between">
             <code className="font-mono text-sm break-all text-accent select-all">

@@ -9,7 +9,6 @@ import {
   Link as LinkIcon,
   Globe as GlobeIcon,
   Mail as MailIcon,
-  ExternalLink as ExternalLinkIcon,
   Clock as ClockIcon,
   CheckCircle2 as CheckCircleIcon,
   XCircle as XCircleIcon,
@@ -117,18 +116,6 @@ export function ScanList({ scans }: ScanListProps) {
                       <h3 className="font-semibold text-lg text-foreground line-clamp-1">
                         {data.meta?.title || getDomainName(scan.url)}
                       </h3>
-                      <div className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1">
-                        <span className="truncate">{scan.url}</span>
-                        <a
-                          href={scan.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={(e) => e.stopPropagation()}
-                          className="inline-flex items-center"
-                        >
-                          <ExternalLinkIcon className="w-3 h-3" />
-                        </a>
-                      </div>
                     </div>
                     <div
                       className={cn(

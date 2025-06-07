@@ -8,10 +8,11 @@ export default function RegisterPage() {
         <div className="rounded-3xl shadow-xl border-0 bg-white p-8 flex flex-col items-center">
           <div className="flex flex-col items-center mb-6">
             <h2 className="text-3xl font-extrabold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent text-center mb-2">
-              Create an account
+              Start your SEO journey
             </h2>
             <p className="text-gray-500 text-center text-sm">
-              Join our SEO Scanner platform
+              Simplify your SEO tasks with our powerful <br /> tool{" "}
+              <b> Element Hunter</b>. Get started for free.
             </p>
           </div>
           <Suspense fallback={<div>Loading...</div>}>

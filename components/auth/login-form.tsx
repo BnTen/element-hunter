@@ -3,7 +3,6 @@
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import Link from "next/link";
 
 export function LoginForm() {
   const router = useRouter();
@@ -61,6 +60,7 @@ export function LoginForm() {
             id="email"
             name="email"
             type="email"
+            placeholder="john.doe@example.com"
             autoComplete="email"
             required
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
@@ -77,6 +77,7 @@ export function LoginForm() {
             id="password"
             name="password"
             type="password"
+            placeholder="********"
             autoComplete="current-password"
             required
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
@@ -92,17 +93,6 @@ export function LoginForm() {
           </button>
         </div>
       </form>
-      <div className="mt-6 text-center">
-        <p className="text-sm text-gray-600">
-          Don&apos;t have an account?{" "}
-          <Link
-            href="/register"
-            className="font-medium text-primary hover:text-primary/90"
-          >
-            Sign up
-          </Link>
-        </p>
-      </div>
     </>
   );
 }

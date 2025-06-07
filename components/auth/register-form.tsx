@@ -61,6 +61,7 @@ export function RegisterForm() {
             id="name"
             name="name"
             type="text"
+            placeholder="John Doe"
             autoComplete="name"
             required
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
@@ -77,6 +78,7 @@ export function RegisterForm() {
             id="email"
             name="email"
             type="email"
+            placeholder="john.doe@example.com"
             autoComplete="email"
             required
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
@@ -93,6 +95,7 @@ export function RegisterForm() {
             id="password"
             name="password"
             type="password"
+            placeholder="********"
             autoComplete="new-password"
             required
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
