@@ -2,18 +2,36 @@
 
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
+import type { Scan as DbScan } from "@/types/scan";
+import { type JsonValue } from "@prisma/client/runtime/library";
 
-interface Scan {
-  id: number;
-  url: string;
-  title: string | null;
-  metaDescription: string | null;
-  h1: string | null;
-  createdAt: string | Date;
+interface ScanData {
+  meta?: {
+    title?: string;
+    description?: string;
+  };
+  headings?: Array<{
+    level: number;
+    text: string;
+  }>;
+}
+
+interface Scan extends Omit<DbScan, "data"> {
+  data: JsonValue;
 }
 
 interface ScansListProps {
   scans: Scan[];
+}
+
+function parseScanData(data: JsonValue): ScanData | null {
+  if (!data || typeof data !== "object") return null;
+
+  const scanData = data as Record<string, unknown>;
+  return {
+    meta: scanData.meta as ScanData["meta"],
+    headings: scanData.headings as ScanData["headings"],
+  };
 }
 
 export function ScansList({ scans }: ScansListProps) {
@@ -53,24 +71,35 @@ export function ScansList({ scans }: ScansListProps) {
                 </td>
               </tr>
             )}
-            {scans.map((scan) => (
-              <tr key={scan.id}>
-                <td className="px-4 py-2 font-mono text-blue-700 underline">
-                  <a href={scan.url} target="_blank" rel="noopener noreferrer">
-                    {scan.url}
-                  </a>
-                </td>
-                <td className="px-4 py-2">{scan.title || "-"}</td>
-                <td className="px-4 py-2">{scan.metaDescription || "-"}</td>
-                <td className="px-4 py-2">{scan.h1 || "-"}</td>
-                <td className="px-4 py-2 whitespace-nowrap text-xs text-gray-500">
-                  {formatDistanceToNow(new Date(scan.createdAt), {
-                    addSuffix: true,
-                    locale: fr,
-                  })}
-                </td>
-              </tr>
-            ))}
+            {scans.map((scan) => {
+              const scanData = parseScanData(scan.data);
+              const title = scanData?.meta?.title;
+              const metaDescription = scanData?.meta?.description;
+              const h1 = scanData?.headings?.find((h) => h.level === 1)?.text;
+
+              return (
+                <tr key={scan.id}>
+                  <td className="px-4 py-2 font-mono text-blue-700 underline">
+                    <a
+                      href={scan.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {scan.url}
+                    </a>
+                  </td>
+                  <td className="px-4 py-2">{title || "-"}</td>
+                  <td className="px-4 py-2">{metaDescription || "-"}</td>
+                  <td className="px-4 py-2">{h1 || "-"}</td>
+                  <td className="px-4 py-2 whitespace-nowrap text-xs text-gray-500">
+                    {formatDistanceToNow(new Date(scan.createdAt), {
+                      addSuffix: true,
+                      locale: fr,
+                    })}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

@@ -1,17 +1,24 @@
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function DELETE(request: Request, { params }: any) {
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ folderId: string }> }
+) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user) {
-      return new Response("Unauthorized", { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { folderId } = params;
+    const { folderId } = await params;
     if (!folderId) {
-      return new Response("Folder ID is required", { status: 400 });
+      return NextResponse.json(
+        { error: "Folder ID is required" },
+        { status: 400 }
+      );
     }
 
     // Vérifier que le dossier appartient à l'utilisateur
@@ -23,7 +30,7 @@ export async function DELETE(request: Request, { params }: any) {
     });
 
     if (!folder) {
-      return new Response("Folder not found", { status: 404 });
+      return NextResponse.json({ error: "Folder not found" }, { status: 404 });
     }
 
     // Supprimer d'abord les relations dans ScanFolderOnScan
@@ -40,9 +47,12 @@ export async function DELETE(request: Request, { params }: any) {
       },
     });
 
-    return new Response(null, { status: 204 });
+    return new NextResponse(null, { status: 204 });
   } catch (error) {
     console.error("[FOLDER_DELETE]", error);
-    return new Response("Internal Server Error", { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }

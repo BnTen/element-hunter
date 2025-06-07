@@ -7,12 +7,13 @@ import { Button } from "@/components/ui/button";
 import { FolderFilter } from "@/components/folder-filter";
 import { ScanList } from "@/components/scans/scan-list";
 
-export default async function ScansPage({
-  searchParams,
-}: {
-  searchParams: { folder?: string };
-}) {
+interface PageProps {
+  searchParams: Promise<{ folder?: string }>;
+}
+
+export default async function ScansPage({ searchParams }: PageProps) {
   const session = await getServerSession(authOptions);
+  const params = await searchParams;
 
   if (!session?.user) {
     redirect("/login");
@@ -28,10 +29,10 @@ export default async function ScansPage({
   const scans = await prisma.seoScan.findMany({
     where: {
       userId: session.user.id,
-      ...(searchParams.folder && {
+      ...(params.folder && {
         folders: {
           some: {
-            scanFolderId: searchParams.folder,
+            scanFolderId: params.folder,
           },
         },
       }),

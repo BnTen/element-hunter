@@ -1,5 +1,15 @@
 import { type JsonValue } from "@prisma/client/runtime/library";
 
+export interface Heading {
+  level: number;
+  text: string;
+}
+
+export interface Link {
+  href: string;
+  text?: string;
+}
+
 export interface ScanData {
   meta?: {
     title?: string;
@@ -26,9 +36,10 @@ export interface ScanData {
   }>;
   links?: {
     total?: number;
-    internal?: string[] | number;
-    external?: string[] | number;
+    internal?: Link[];
+    external?: Link[];
   };
+  headings?: Heading[];
   emails?: string[];
 }
 

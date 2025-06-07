@@ -19,8 +19,6 @@ import {
   Globe as GlobeIcon,
   Image as ImageIcon,
   Link as LinkIcon,
-  Search as SearchIcon,
-  Tag as TagIcon,
   XCircle as XCircleIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -33,15 +31,15 @@ import type { ScanData } from "@/types/scan";
 import Image from "next/image";
 
 interface PageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default async function ScanDetailPage({ params }: PageProps) {
   const session = await getServerSession(authOptions);
   if (!session?.user) redirect("/login");
-  const id = params.id;
+  const { id } = await params;
   const scan = await prisma.seoScan.findUnique({
     where: { id, userId: session.user.id },
   });
@@ -250,473 +248,295 @@ export default async function ScanDetailPage({ params }: PageProps) {
             <CardDescription>Main issues detected</CardDescription>
           </CardHeader>
           <CardContent>
-            {mainIssues.length === 0 ? (
-              <div className="text-success flex items-center gap-2">
-                <CheckCircleIcon className="h-4 w-4" />
-                No major issues detected
-              </div>
-            ) : (
-              <ul className="list-disc pl-5 space-y-1">
-                {mainIssues.map((issue, i) => (
-                  <li key={i} className="text-destructive">
-                    {issue}
+            <ScrollArea className="h-[200px]">
+              <ul className="space-y-2">
+                {mainIssues.map((issue, index) => (
+                  <li
+                    key={index}
+                    className="flex items-start gap-2 text-sm text-destructive"
+                  >
+                    <XCircleIcon className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                    <span>{issue}</span>
                   </li>
                 ))}
               </ul>
-            )}
+            </ScrollArea>
           </CardContent>
         </Card>
         <Card>
           <CardHeader>
             <CardTitle>Strengths</CardTitle>
-            <CardDescription>What&apos;s well optimized</CardDescription>
+            <CardDescription>Positive elements detected</CardDescription>
           </CardHeader>
           <CardContent>
-            {strengths.length === 0 ? (
-              <div className="text-muted-foreground">No strengths detected</div>
-            ) : (
-              <ul className="list-disc pl-5 space-y-1">
-                {strengths.map((item, i) => (
-                  <li key={i} className="text-success">
-                    {item}
+            <ScrollArea className="h-[200px]">
+              <ul className="space-y-2">
+                {strengths.map((strength, index) => (
+                  <li
+                    key={index}
+                    className="flex items-start gap-2 text-sm text-success"
+                  >
+                    <CheckCircleIcon className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                    <span>{strength}</span>
                   </li>
                 ))}
               </ul>
-            )}
+            </ScrollArea>
           </CardContent>
         </Card>
       </section>
 
-      {/* Sections détaillées (onglets) */}
-      <main className="container pb-10 max-w-4xl mx-auto">
-        <Tabs defaultValue="meta" className="space-y-10">
-          <TabsList className="w-full justify-start h-14 bg-muted/60 p-2 rounded-xl shadow border mb-4">
-            <TabsTrigger
-              value="meta"
-              className="data-[state=active]:bg-background data-[state=active]:shadow-lg text-lg font-semibold px-6 py-2 rounded-lg"
-            >
-              <SearchIcon className="h-5 w-5 mr-2" />
-              Metadata
-            </TabsTrigger>
-            <TabsTrigger
-              value="content"
-              className="data-[state=active]:bg-background data-[state=active]:shadow-lg text-lg font-semibold px-6 py-2 rounded-lg"
-            >
-              <TagIcon className="h-5 w-5 mr-2" />
-              Content
-            </TabsTrigger>
-            <TabsTrigger
-              value="images"
-              className="data-[state=active]:bg-background data-[state=active]:shadow-lg text-lg font-semibold px-6 py-2 rounded-lg"
-            >
-              <ImageIcon className="h-5 w-5 mr-2" />
-              Images
-            </TabsTrigger>
-            <TabsTrigger
-              value="links"
-              className="data-[state=active]:bg-background data-[state=active]:shadow-lg text-lg font-semibold px-6 py-2 rounded-lg"
-            >
-              <LinkIcon className="h-5 w-5 mr-2" />
-              Links
-            </TabsTrigger>
-            <TabsTrigger
-              value="tech"
-              className="data-[state=active]:bg-background data-[state=active]:shadow-lg text-lg font-semibold px-6 py-2 rounded-lg"
-            >
-              <GlobeIcon className="h-5 w-5 mr-2" />
-              Technologies
-            </TabsTrigger>
+      {/* Détails */}
+      <section className="max-w-4xl mx-auto px-4 mb-8">
+        <Tabs defaultValue="meta" className="w-full">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="meta">Meta</TabsTrigger>
+            <TabsTrigger value="content">Content</TabsTrigger>
+            <TabsTrigger value="links">Links</TabsTrigger>
+            <TabsTrigger value="images">Images</TabsTrigger>
           </TabsList>
-
-          <TabsContent value="meta" className="space-y-8">
-            <Card className="border-none shadow-xl bg-white/95">
-              <CardHeader className="bg-muted/40 border-b rounded-t-xl">
-                <CardTitle className="text-2xl font-bold">Metadata</CardTitle>
-                <CardDescription className="text-base">
-                  Essential information for SEO
-                </CardDescription>
+          <TabsContent value="meta" className="mt-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Meta Tags</CardTitle>
+                <CardDescription>SEO meta information</CardDescription>
               </CardHeader>
-              <CardContent className="p-8 space-y-8">
-                <div className="grid md:grid-cols-2 gap-8">
-                  <div className="p-4 rounded-lg bg-muted/30">
-                    <h3 className="text-base font-semibold flex items-center gap-2 mb-2">
-                      <SearchIcon className="h-5 w-5 text-primary" />
+              <CardContent>
+                <dl className="space-y-4">
+                  <div>
+                    <dt className="text-sm font-medium text-muted-foreground">
                       Title
-                    </h3>
-                    <p className="text-base">
-                      {data.meta?.title || "Not defined"}
-                    </p>
+                    </dt>
+                    <dd className="mt-1 text-sm">
+                      {data.meta?.title || (
+                        <span className="text-destructive">Missing</span>
+                      )}
+                    </dd>
                   </div>
-                  <div className="p-4 rounded-lg bg-muted/30">
-                    <h3 className="text-base font-semibold flex items-center gap-2 mb-2">
-                      <SearchIcon className="h-5 w-5 text-primary" />
+                  <div>
+                    <dt className="text-sm font-medium text-muted-foreground">
                       Description
-                    </h3>
-                    <p className="text-base">
-                      {data.meta?.description || "Not defined"}
-                    </p>
+                    </dt>
+                    <dd className="mt-1 text-sm">
+                      {data.meta?.description || (
+                        <span className="text-destructive">Missing</span>
+                      )}
+                    </dd>
                   </div>
-                  <div className="p-4 rounded-lg bg-muted/30 col-span-2">
-                    <h3 className="text-base font-semibold flex items-center gap-2 mb-2">
-                      <TagIcon className="h-5 w-5 text-primary" />
+                  <div>
+                    <dt className="text-sm font-medium text-muted-foreground">
                       Keywords
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      {Array.isArray(data.meta?.keywords) &&
-                      (data.meta.keywords as string[]).length > 0 ? (
-                        (data.meta.keywords as string[]).map(
-                          (keyword: string, i: number) => (
+                    </dt>
+                    <dd className="mt-1 text-sm">
+                      {data.meta?.keywords?.length ? (
+                        <div className="flex flex-wrap gap-1">
+                          {data.meta.keywords.map((keyword, index) => (
                             <Badge
-                              key={i}
+                              key={index}
                               variant="secondary"
-                              className="text-sm px-3 py-1"
+                              className="text-xs"
                             >
                               {keyword}
                             </Badge>
-                          )
-                        )
+                          ))}
+                        </div>
                       ) : (
-                        <span className="text-muted-foreground">
-                          No keywords provided
+                        <span className="text-destructive">Missing</span>
+                      )}
+                    </dd>
+                  </div>
+                </dl>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="content" className="mt-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Content Analysis</CardTitle>
+                <CardDescription>Text content and structure</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <dl className="space-y-4">
+                  <div>
+                    <dt className="text-sm font-medium text-muted-foreground">
+                      Headings
+                    </dt>
+                    <dd className="mt-1 text-sm">
+                      {data.headings?.length ? (
+                        <ul className="space-y-1">
+                          {data.headings.map((heading, index) => (
+                            <li
+                              key={index}
+                              className={cn(
+                                "flex items-center gap-2",
+                                heading.level === 1 && "text-lg font-bold",
+                                heading.level === 2 &&
+                                  "text-base font-semibold",
+                                heading.level === 3 && "text-sm"
+                              )}
+                            >
+                              <span className="text-muted-foreground">
+                                H{heading.level}
+                              </span>
+                              <span>{heading.text}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <span className="text-destructive">
+                          No headings found
                         </span>
                       )}
-                    </div>
+                    </dd>
                   </div>
-                  <div className="p-4 rounded-lg bg-muted/30 col-span-2">
-                    <h3 className="text-base font-semibold flex items-center gap-2 mb-2">
-                      <GlobeIcon className="h-5 w-5 text-primary" />
-                      Technical Information
-                    </h3>
-                    <div className="grid gap-3 text-base md:grid-cols-2">
-                      <div className="flex justify-between items-center p-2 rounded-md bg-background">
-                        <span className="text-muted-foreground">Charset</span>
-                        <span className="font-medium">
-                          {data.basic?.charset || "Not defined"}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center p-2 rounded-md bg-background">
-                        <span className="text-muted-foreground">Language</span>
-                        <span className="font-medium">
-                          {data.basic?.language || "Not detected"}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center p-2 rounded-md bg-background">
-                        <span className="text-muted-foreground">Viewport</span>
-                        <span className="font-medium">
-                          {data.meta &&
-                          "viewport" in data.meta &&
-                          (data.meta as { viewport?: string }).viewport
-                            ? (data.meta as { viewport?: string }).viewport
-                            : "Not defined"}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center p-2 rounded-md bg-background">
-                        <span className="text-muted-foreground">Robots</span>
-                        <span className="font-medium">
-                          {data.meta &&
-                          "robots" in data.meta &&
-                          (data.meta as { robots?: string }).robots
-                            ? (data.meta as { robots?: string }).robots
-                            : "Not defined"}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                </dl>
               </CardContent>
             </Card>
           </TabsContent>
-
-          <TabsContent value="content" className="space-y-8">
-            <Card className="border-none shadow-xl bg-white/95">
-              <CardHeader className="bg-muted/40 border-b rounded-t-xl">
-                <CardTitle className="text-2xl font-bold">Content</CardTitle>
-                <CardDescription className="text-base">
-                  Page structure and content
-                </CardDescription>
+          <TabsContent value="links" className="mt-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Links Analysis</CardTitle>
+                <CardDescription>Internal and external links</CardDescription>
               </CardHeader>
-              <CardContent className="p-8">
-                <ScrollArea className="h-[500px] pr-4">
-                  <div className="space-y-8">
-                    {"headings" in data
-                      ? Object.entries(data.headings ?? {}).map(
-                          ([level, headings]) => {
-                            const arr =
-                              Array.isArray(headings) &&
-                              headings.every(
-                                (h) => typeof h === "object" && h && "text" in h
-                              )
-                                ? headings
-                                : [];
-                            return (
-                              <div key={level} className="space-y-3">
-                                <h3 className="text-base font-semibold capitalize flex items-center gap-2">
-                                  <TagIcon className="h-5 w-5 text-primary" />
-                                  {level}
-                                </h3>
-                                <div className="space-y-2">
-                                  {arr.map((heading, i) => (
-                                    <div
-                                      key={i}
-                                      className="text-base p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
-                                    >
-                                      {heading.text}
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            );
-                          }
-                        )
-                      : []}
-                  </div>
-                </ScrollArea>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="images" className="space-y-8">
-            <Card className="border-none shadow-xl bg-white/95">
-              <CardHeader className="bg-muted/40 border-b rounded-t-xl">
-                <CardTitle className="text-2xl font-bold">Images</CardTitle>
-                <CardDescription className="text-base">
-                  {Array.isArray(data.images) ? data.images.length : 0} images
-                  found
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="p-8">
-                <ScrollArea className="h-[500px] pr-4">
-                  <div className="grid gap-8 md:grid-cols-2">
-                    {Array.isArray(data.images)
-                      ? data.images.map((image, i) => (
-                          <div
-                            key={i}
-                            className={cn(
-                              "p-4 rounded-lg border bg-card hover:shadow-lg transition-shadow",
-                              !image.alt && "border-destructive"
-                            )}
-                          >
-                            <div className="aspect-video relative mb-3 rounded-lg overflow-hidden bg-muted">
-                              <Image
-                                src={image.src}
-                                alt={image.alt || "No alt text"}
-                                width={image.width}
-                                height={image.height}
-                                className="object-cover w-full h-full"
-                              />
-                            </div>
-                            <div className="space-y-2">
-                              <p className="text-base font-semibold truncate">
-                                {image.alt || "No alt text"}
-                              </p>
-                              <p className="text-xs text-muted-foreground truncate">
-                                {image.src}
-                              </p>
-                            </div>
-                          </div>
-                        ))
-                      : []}
-                  </div>
-                </ScrollArea>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="links" className="space-y-8">
-            <Card className="border-none shadow-xl bg-white/95">
-              <CardHeader className="bg-muted/40 border-b rounded-t-xl">
-                <CardTitle className="text-2xl font-bold">Links</CardTitle>
-                <CardDescription className="text-base">
-                  {Array.isArray(data.links?.internal)
-                    ? data.links.internal.length
-                    : 0}{" "}
-                  internal links,{" "}
-                  {Array.isArray(data.links?.external)
-                    ? data.links.external.length
-                    : 0}{" "}
-                  external links
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="p-8">
-                <Tabs defaultValue="internal" className="space-y-6">
-                  <TabsList className="w-full justify-start h-12 bg-muted/50 p-1 rounded-lg mb-4">
-                    <TabsTrigger
-                      value="internal"
-                      className="data-[state=active]:bg-background data-[state=active]:shadow-lg text-base font-semibold px-6 py-2 rounded-lg"
-                    >
+              <CardContent>
+                <dl className="space-y-4">
+                  <div>
+                    <dt className="text-sm font-medium text-muted-foreground">
                       Internal Links
-                    </TabsTrigger>
-                    <TabsTrigger
-                      value="external"
-                      className="data-[state=active]:bg-background data-[state=active]:shadow-lg text-base font-semibold px-6 py-2 rounded-lg"
-                    >
+                    </dt>
+                    <dd className="mt-1 text-sm">
+                      {data.links?.internal?.length ? (
+                        <ul className="space-y-1">
+                          {data.links.internal.map((link, index) => (
+                            <li key={index} className="flex items-center gap-2">
+                              <LinkIcon className="h-3 w-3 text-muted-foreground" />
+                              <a
+                                href={link.href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-primary hover:underline"
+                              >
+                                {link.text || link.href}
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <span className="text-destructive">
+                          No internal links found
+                        </span>
+                      )}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm font-medium text-muted-foreground">
                       External Links
-                    </TabsTrigger>
-                  </TabsList>
-
-                  <TabsContent value="internal">
-                    <ScrollArea className="h-[350px] pr-4">
-                      <div className="space-y-2">
-                        {Array.isArray(data.links?.internal) &&
-                        data.links.internal.length ? (
-                          data.links.internal.map((link, i) => {
-                            const isObj =
-                              typeof link === "object" &&
-                              link !== null &&
-                              "url" in link;
-                            return (
+                    </dt>
+                    <dd className="mt-1 text-sm">
+                      {data.links?.external?.length ? (
+                        <ul className="space-y-1">
+                          {data.links.external.map((link, index) => (
+                            <li key={index} className="flex items-center gap-2">
+                              <ExternalLinkIcon className="h-3 w-3 text-muted-foreground" />
                               <a
-                                key={i}
-                                href={
-                                  isObj
-                                    ? (link as { url: string }).url
-                                    : (link as string)
-                                }
+                                href={link.href}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="block p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors text-base"
-                                aria-label={`Lien interne vers ${
-                                  isObj
-                                    ? (link as { url: string }).url
-                                    : (link as string)
-                                }`}
+                                className="text-primary hover:underline"
                               >
-                                <div className="font-semibold truncate flex items-center gap-2">
-                                  <LinkIcon className="h-4 w-4 text-accent" />
-                                  {isObj
-                                    ? (link as { text?: string; url: string })
-                                        .text || (link as { url: string }).url
-                                    : (link as string)}
-                                </div>
-                                <div className="text-xs text-muted-foreground truncate mt-1">
-                                  {isObj
-                                    ? (link as { url: string }).url
-                                    : (link as string)}
-                                </div>
+                                {link.text || link.href}
                               </a>
-                            );
-                          })
-                        ) : (
-                          <span className="text-muted-foreground">
-                            No internal links
-                          </span>
-                        )}
-                      </div>
-                    </ScrollArea>
-                  </TabsContent>
-
-                  <TabsContent value="external">
-                    <ScrollArea className="h-[350px] pr-4">
-                      <div className="space-y-2">
-                        {Array.isArray(data.links?.external) &&
-                        data.links.external.length ? (
-                          data.links.external.map((link, i) => {
-                            const isObj =
-                              typeof link === "object" &&
-                              link !== null &&
-                              "url" in link;
-                            return (
-                              <a
-                                key={i}
-                                href={
-                                  isObj
-                                    ? (link as { url: string }).url
-                                    : (link as string)
-                                }
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="block p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors text-base"
-                                aria-label={`Lien externe vers ${
-                                  isObj
-                                    ? (link as { url: string }).url
-                                    : (link as string)
-                                }`}
-                              >
-                                <div className="font-semibold truncate flex items-center gap-2">
-                                  <ExternalLinkIcon className="h-4 w-4 text-primary" />
-                                  {isObj
-                                    ? (link as { text?: string; url: string })
-                                        .text || (link as { url: string }).url
-                                    : (link as string)}
-                                </div>
-                                <div className="text-xs text-muted-foreground truncate mt-1">
-                                  {isObj
-                                    ? (link as { url: string }).url
-                                    : (link as string)}
-                                </div>
-                              </a>
-                            );
-                          })
-                        ) : (
-                          <span className="text-muted-foreground">
-                            No external links
-                          </span>
-                        )}
-                      </div>
-                    </ScrollArea>
-                  </TabsContent>
-                </Tabs>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <span className="text-destructive">
+                          No external links found
+                        </span>
+                      )}
+                    </dd>
+                  </div>
+                </dl>
               </CardContent>
             </Card>
           </TabsContent>
-
-          <TabsContent value="tech" className="space-y-8">
-            <Card className="border-none shadow-xl bg-white/95">
-              <CardHeader className="bg-muted/40 border-b rounded-t-xl">
-                <CardTitle className="text-2xl font-bold">
-                  Technologies
-                </CardTitle>
-                <CardDescription className="text-base">
-                  Technologies detected on the site
-                </CardDescription>
+          <TabsContent value="images" className="mt-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Images Analysis</CardTitle>
+                <CardDescription>Images and their attributes</CardDescription>
               </CardHeader>
-              <CardContent className="p-8">
-                <div className="grid gap-8 md:grid-cols-2">
-                  {"technologies" in data
-                    ? Object.entries(data.technologies ?? {}).map(
-                        ([category, items]) => {
-                          const arr = Array.isArray(items) ? items : [];
-                          return (
-                            <div key={category} className="space-y-3">
-                              <h3 className="text-base font-semibold capitalize flex items-center gap-2">
-                                <GlobeIcon className="h-5 w-5 text-primary" />
-                                {category.replace(/([A-Z])/g, " $1").trim()}
-                              </h3>
-                              <div className="flex flex-wrap gap-2">
-                                {arr.map((item, i) => (
-                                  <Badge
-                                    key={i}
-                                    variant="outline"
-                                    className="text-sm px-3 py-1"
-                                  >
-                                    {item}
-                                  </Badge>
-                                ))}
+              <CardContent>
+                <dl className="space-y-4">
+                  <div>
+                    <dt className="text-sm font-medium text-muted-foreground">
+                      Images
+                    </dt>
+                    <dd className="mt-1 text-sm">
+                      {data.images?.length ? (
+                        <ul className="space-y-4">
+                          {data.images.map((image, index) => (
+                            <li key={index} className="flex items-start gap-4">
+                              <div className="flex-shrink-0">
+                                <Image
+                                  src={image.src}
+                                  alt={image.alt || "Image"}
+                                  width={64}
+                                  height={64}
+                                  className="w-16 h-16 rounded-lg border shadow object-cover bg-white"
+                                />
                               </div>
-                            </div>
-                          );
-                        }
-                      )
-                    : []}
-                </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2">
+                                  <span className="font-medium">
+                                    {image.alt || "No alt text"}
+                                  </span>
+                                  {!image.alt && (
+                                    <Badge
+                                      variant="destructive"
+                                      className="text-xs"
+                                    >
+                                      Missing alt
+                                    </Badge>
+                                  )}
+                                </div>
+                                <p className="text-xs text-muted-foreground mt-1 truncate">
+                                  {image.src}
+                                </p>
+                              </div>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <span className="text-destructive">
+                          No images found
+                        </span>
+                      )}
+                    </dd>
+                  </div>
+                </dl>
               </CardContent>
             </Card>
           </TabsContent>
         </Tabs>
-      </main>
+      </section>
     </div>
   );
 }
 
 function renderError(message: string) {
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen bg-background flex items-center justify-center">
+      <Card className="max-w-md w-full">
         <CardHeader>
-          <CardTitle className="text-destructive">Error</CardTitle>
+          <CardTitle>Error</CardTitle>
+          <CardDescription>{message}</CardDescription>
         </CardHeader>
         <CardContent>
-          <p>{message}</p>
+          <Button asChild>
+            <Link href="/scans">Back to Scans</Link>
+          </Button>
         </CardContent>
       </Card>
     </div>

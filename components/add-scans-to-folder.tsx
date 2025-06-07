@@ -18,12 +18,15 @@ interface Folder {
 }
 
 interface AddScansToFolderProps {
-  scanIds: string[];
+  scanIds?: string[];
+  folderId?: string;
 }
 
-export function AddScansToFolder({ scanIds }: AddScansToFolderProps) {
+export function AddScansToFolder({ scanIds, folderId }: AddScansToFolderProps) {
   const [folders, setFolders] = useState<Folder[]>([]);
-  const [selectedFolderId, setSelectedFolderId] = useState<string>("");
+  const [selectedFolderId, setSelectedFolderId] = useState<string>(
+    folderId || ""
+  );
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
@@ -60,7 +63,7 @@ export function AddScansToFolder({ scanIds }: AddScansToFolderProps) {
         },
         body: JSON.stringify({
           folderId: selectedFolderId,
-          scanIds,
+          scanIds: scanIds || [],
         }),
       });
 
@@ -85,7 +88,7 @@ export function AddScansToFolder({ scanIds }: AddScansToFolderProps) {
       <Select
         value={selectedFolderId}
         onValueChange={setSelectedFolderId}
-        disabled={isLoading}
+        disabled={isLoading || !!folderId}
       >
         <SelectTrigger className="w-[200px]">
           <SelectValue placeholder="Sélectionner un dossier" />
