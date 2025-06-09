@@ -21,14 +21,10 @@ export function ApiTokenDisplay({ apiToken }: ApiTokenDisplayProps) {
 
   return (
     <div className="border rounded-lg p-6 bg-white shadow-md">
-      <h2 className="text-xl font-semibold mb-2">Votre token API</h2>
-      <p className="text-sm text-gray-500">
-        Votre token API est utilisé pour authentifier les requêtes vers notre
-        API.
+      <p className="text-sm text-gray-500 mb-4">
+        Your API token is used to authenticate requests to our API.
       </p>
-      <p className="text-gray-600 mb-4">
-        Voici votre token à coller dans l&apos;extension Chrome.
-      </p>
+
       <div className="flex gap-2 items-center">
         <input
           value={apiToken}

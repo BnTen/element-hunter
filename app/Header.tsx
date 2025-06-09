@@ -43,7 +43,7 @@ export default function Header() {
 
   return (
     <header className="w-full mt-6 mb-10 px-0">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-white rounded-2xl shadow-lg sm:px-6 px-2 py-4 sm:mx-4 mx-1 gap-2 sm:gap-4">
+      <div className="flex flex-row items-center justify-between bg-white rounded-2xl shadow-lg sm:px-6 px-2 py-4 sm:mx-4 mx-1 gap-2 sm:gap-4">
         <div className="flex items-center gap-4">
           <div className="">
             <HeaderLogo />
@@ -65,11 +65,11 @@ export default function Header() {
         </button>
         {/* Liens principaux desktop */}
         <div className="hidden sm:flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-4 w-full sm:w-auto mt-2 sm:mt-0">
-          <Button variant="glossy" asChild>
-            <Link href="/">API</Link>
-          </Button>
           {session ? (
             <>
+              <Button variant="glossy" asChild>
+                <Link href="/dashboard">API</Link>
+              </Button>
               <Button variant="glossyAccent" asChild>
                 <Link href="/scans">My Scans</Link>
               </Button>
@@ -110,9 +110,14 @@ export default function Header() {
               </DropdownMenu>
             </>
           ) : (
-            <Button variant="glossyAccent" asChild>
-              <Link href="/login">Sign in</Link>
-            </Button>
+            <>
+              <Button variant="glossy" asChild>
+                <Link href="/login">Log in</Link>
+              </Button>
+              <Button variant="glossyAccent" asChild>
+                <Link href="/register">Sign up</Link>
+              </Button>
+            </>
           )}
         </div>
         {/* Drawer mobile */}
@@ -131,11 +136,15 @@ export default function Header() {
               >
                 <CloseIcon className="w-6 h-6 text-primary" />
               </button>
-              <Button variant="glossy" asChild onClick={() => setOpen(false)}>
-                <Link href="/">API</Link>
-              </Button>
               {session ? (
                 <>
+                  <Button
+                    variant="glossy"
+                    asChild
+                    onClick={() => setOpen(false)}
+                  >
+                    <Link href="/">API</Link>
+                  </Button>
                   <Button
                     variant="glossyAccent"
                     asChild
@@ -173,13 +182,22 @@ export default function Header() {
                   </div>
                 </>
               ) : (
-                <Button
-                  variant="glossyAccent"
-                  asChild
-                  onClick={() => setOpen(false)}
-                >
-                  <Link href="/login">Sign in</Link>
-                </Button>
+                <>
+                  <Button
+                    variant="glossy"
+                    asChild
+                    onClick={() => setOpen(false)}
+                  >
+                    <Link href="/login">Log in</Link>
+                  </Button>
+                  <Button
+                    variant="glossyAccent"
+                    asChild
+                    onClick={() => setOpen(false)}
+                  >
+                    <Link href="/register">Sign up</Link>
+                  </Button>
+                </>
               )}
             </div>
             {/* Zone cliquable pour fermer */}
