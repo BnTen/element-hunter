@@ -20,13 +20,13 @@ const buttonVariants = cva(
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         glossy:
-          "relative bg-gradient-to-r from-primary/90 to-primary overflow-hidden shadow-xl before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/25 before:to-transparent before:translate-x-[-200%] hover:before:translate-x-[200%] before:transition-transform before:duration-[750ms] before:ease-in-out hover:opacity-90 text-white",
+          "relative bg-gradient-to-r from-primary/90 to-primary overflow-hidden shadow-xl before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/25 before:to-transparent before:translate-x-[-200%] hover:before:translate-x-[200%] before:transition-transform before:duration-700 before:ease-in-out hover:opacity-90 text-white",
         glossyAccent:
-          "relative bg-gradient-to-r from-accent/90 to-accent overflow-hidden shadow-xl before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/25 before:to-transparent before:translate-x-[-200%] hover:before:translate-x-[200%] before:transition-transform before:duration-[750ms] before:ease-in-out hover:opacity-90 text-white",
+          "relative bg-gradient-to-r from-accent/90 to-accent overflow-hidden shadow-xl before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/25 before:to-transparent before:translate-x-[-200%] hover:before:translate-x-[200%] before:transition-transform before:duration-700 before:ease-in-out hover:opacity-90 text-white",
         glossySuccess:
-          "relative bg-gradient-to-r from-success/90 to-success overflow-hidden shadow-xl before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/25 before:to-transparent before:translate-x-[-200%] hover:before:translate-x-[200%] before:transition-transform before:duration-[750ms] before:ease-in-out hover:opacity-90 text-white",
+          "relative bg-gradient-to-r from-success/90 to-success overflow-hidden shadow-xl before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/25 before:to-transparent before:translate-x-[-200%] hover:before:translate-x-[200%] before:transition-transform before:duration-700 before:ease-in-out hover:opacity-90 text-white",
         glossyDestructive:
-          "relative bg-gradient-to-r from-destructive/90 to-destructive overflow-hidden shadow-xl before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/25 before:to-transparent before:translate-x-[-200%] hover:before:translate-x-[200%] before:transition-transform before:duration-[750ms] before:ease-in-out hover:opacity-90 text-white",
+          "relative bg-gradient-to-r from-destructive/90 to-destructive overflow-hidden shadow-xl before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/25 before:to-transparent before:translate-x-[-200%] hover:before:translate-x-[200%] before:transition-transform before:duration-700 before:ease-in-out hover:opacity-90 text-white",
       },
       size: {
         default: "h-9 px-4 py-2",
