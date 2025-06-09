@@ -73,7 +73,7 @@ export default async function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f6fcf7] flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col">
       {/* Hero Video Section */}
       <section className="flex flex-col items-center justify-center py-16 px-4">
         <h1 className="text-4xl md:text-5xl font-extrabold text-primary tracking-tight mb-4 text-center">
