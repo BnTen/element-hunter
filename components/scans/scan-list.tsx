@@ -22,6 +22,7 @@ import { type JsonValue } from "@prisma/client/runtime/library";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import Image from "next/image";
+import Header from "@/app/Header";
 
 interface ScanListProps {
   scans: Array<{

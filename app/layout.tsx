@@ -4,8 +4,12 @@ import Header from "./Header";
 import Providers from "./providers";
 
 export const metadata = {
-  title: "Superblog",
-  description: "A blog app using Next.js and Prisma",
+  title: "Element Hunter",
+  description:
+    "Scan any webpage in 1 click to audit SEO, content, and technologies — all synced to your personal dashboard.",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({
