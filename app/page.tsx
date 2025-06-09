@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import React from "react";
+import { Mail } from "lucide-react";
 
 // Utilitaire pour colorer le JSON
 function renderStyledJson(obj: unknown, indent = 2): React.ReactNode {
@@ -270,44 +271,38 @@ export default async function Home() {
       </div>
 
       {/* Why Choose Section (footer harmonisé) */}
-      <footer className="w-full  py-16 px-4 mt-16 border-t border-zinc-200">
+      <footer className="w-full py-16 px-4 mt-16 border-t border-zinc-200">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl font-extrabold mb-6 text-primary">
             💡 Why Choose Element Hunter?
           </h2>
-          <ul className="list-none flex flex-col gap-3 text-zinc-800 text-lg font-semibold items-center mb-10">
-            <li>Full-page audit in just one click</li>
-            <li>Clean and modern interface</li>
-            <li>
-              Perfect for client reports, benchmarks, and competitive analysis
-            </li>
-            <li>Lightweight, fast, and privacy-friendly</li>
-          </ul>
-          <div className="flex flex-col sm:flex-row gap-6 justify-center mb-6 w-full max-w-2xl mx-auto">
-            <Button
-              asChild
-              variant="outline"
-              className="flex-1 min-w-[120px] text-base py-4"
-            >
-              <Link href="/login">Log in</Link>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              className="flex-1 min-w-[160px] text-base py-4 bg-primary text-white border-primary hover:bg-primary/90"
-            >
-              <Link href="/register">Get started for free</Link>
-            </Button>
+          <p className="text-lg text-muted-foreground mb-8">
+            The ultimate Chrome extension for web developers and SEO experts.
+            Extract, analyze, and optimize your web content with ease.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link href="/login" passHref legacyBehavior>
+              <Button
+                variant="glossyAccent"
+                size="lg"
+                className="w-full sm:w-auto"
+              >
+                Get Started
+              </Button>
+            </Link>
+            <Link href="/register" passHref legacyBehavior>
+              <Button variant="outline" size="lg" className="w-full sm:w-auto">
+                Create Account
+              </Button>
+            </Link>
           </div>
-          <div className="mt-2 text-xs text-zinc-500 mb-2">
-            <span>Ready to get started? </span>
+          <div className="mt-8 flex items-center justify-center gap-2 text-muted-foreground">
+            <Mail className="w-4 h-4" />
             <a
-              href="https://chrome.google.com/webstore/detail/element-hunter/"
-              target="_blank"
-              rel="noopener"
-              className="underline hover:text-primary"
+              href="mailto:prouffbenjamin@gmail.com"
+              className="hover:text-primary transition-colors"
             >
-              Install the Chrome extension
+              prouffbenjamin@gmail.com
             </a>
           </div>
           <div className="mt-6 text-xs text-zinc-400">
