@@ -127,7 +127,7 @@ export function TechnologiesDisplay({ technologies }: TechnologiesDisplayProps) 
                     </Badge>
                   </div>
                   <div className="flex flex-wrap gap-1 ml-6">
-                    {tools!.map((tool, index) => (
+                    {tools!.map((tool: string, index: number) => (
                       <Badge 
                         key={index} 
                         variant="secondary" 
