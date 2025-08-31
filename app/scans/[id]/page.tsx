@@ -20,6 +20,12 @@ import {
   Image as ImageIcon,
   Link as LinkIcon,
   XCircle as XCircleIcon,
+  Brain,
+  Shield,
+  Zap,
+  Eye,
+  Code,
+  BarChart3,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -27,8 +33,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { calculateSEOScore, getIssues } from "@/lib/seo-utils";
-import type { ScanData } from "@/types/scan";
+import type { ScanData, NewScanData, SimpleScanData, MultipleScanData } from "@/types/scan";
+import { isMultipleScanData } from "@/types/scan";
 import Image from "next/image";
+import { PerformanceMetrics } from "@/components/scan-detail/performance-metrics";
+import { TechnologiesDisplay } from "@/components/scan-detail/technologies-display";
+import { SecurityOverview } from "@/components/scan-detail/security-overview";
+import { AIOptimizationDisplay } from "@/components/scan-detail/ai-optimization";
+import { AccessibilityDisplay } from "@/components/scan-detail/accessibility-display";
+import { MultiplePagesOverview } from "@/components/scan-detail/multiple-pages-overview";
+import { EnhancedContentDisplay } from "@/components/scan-detail/enhanced-content-display";
 
 interface PageProps {
   params: Promise<{
@@ -44,9 +58,351 @@ export default async function ScanDetailPage({ params }: PageProps) {
     where: { id, userId: session.user.id },
   });
   if (!scan) redirect("/scans");
-  const scanData = scan.data as unknown as { data: unknown };
-  const rawData = scanData.data as ScanData;
+  
+  // Parse scan data - could be legacy format or new format
+  const scanData = scan.data as unknown as { data?: unknown } | NewScanData;
+  let rawData: NewScanData | ScanData;
+  
+  // Check if it's legacy format with nested data property
+  if ('data' in scanData && scanData.data) {
+    rawData = scanData.data as ScanData;
+  } else {
+    rawData = scanData as NewScanData;
+  }
+
   if (!rawData) return renderError("Scan data is missing.");
+
+  // Detect if it's new format (simple or multiple pages)
+  const isNewFormat = 'url' in rawData || isMultipleScanData(rawData);
+  
+  if (isNewFormat) {
+    return renderNewScanDetail(scan, rawData as NewScanData);
+  }
+
+  // Legacy format handling
+  return renderLegacyScanDetail(scan, rawData as ScanData);
+}
+
+function renderNewScanDetail(scan: any, data: NewScanData) {
+  const isMultiple = isMultipleScanData(data);
+  const scanDate = scan.createdAt ? new Date(scan.createdAt).toLocaleDateString() : "";
+
+  if (isMultiple) {
+    const multiData = data as MultipleScanData;
+    const mergedData = multiData.summary.mergedData;
+    const seoScore = mergedData.aiOptimization?.score || 75; // Fallback score
+    const favicon = mergedData.meta?.meta?.["og:image"] || mergedData.images?.[0]?.src || null;
+
+    return (
+      <div className="min-h-screen bg-background">
+        {/* Navigation */}
+        <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
+          <div className="container flex h-16 items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="icon" asChild>
+                <Link href="/scans">
+                  <ArrowLeftIcon className="h-5 w-5" />
+                  <span className="sr-only">Back</span>
+                </Link>
+              </Button>
+              <span className="font-bold text-lg tracking-tight">Element Hunter</span>
+            </div>
+            <div className="flex items-center gap-4">
+              <Badge variant="outline" className="px-3 py-1">
+                {multiData.summary.totalPages} pages
+              </Badge>
+              <Badge
+                variant={seoScore >= 80 ? "default" : seoScore >= 60 ? "secondary" : "destructive"}
+                className="px-3 py-1 text-base font-semibold"
+              >
+                SEO&nbsp;{seoScore}%
+              </Badge>
+            </div>
+          </div>
+        </nav>
+
+        {/* Header */}
+        <header className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center gap-6 py-8">
+          <div className="flex-shrink-0">
+            {favicon ? (
+              <Image
+                src={favicon}
+                alt="Favicon"
+                width={64}
+                height={64}
+                className="w-16 h-16 rounded-xl border shadow object-cover bg-white"
+              />
+            ) : (
+              <GlobeIcon className="w-16 h-16 text-muted-foreground" />
+            )}
+          </div>
+          <div className="flex-1 min-w-0">
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground truncate">
+              {mergedData.meta?.title || scan.url}
+            </h1>
+            <a
+              href={scan.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-primary/80 hover:underline flex items-center gap-1 mt-1 truncate"
+            >
+              {scan.url}
+              <ExternalLinkIcon className="h-3 w-3" />
+            </a>
+            <div className="flex items-center gap-2 mt-2">
+              <span className="text-xs text-muted-foreground">Scan from {scanDate}</span>
+              <Badge variant="outline">Multi-page scan</Badge>
+            </div>
+          </div>
+        </header>
+
+        {/* Main Content */}
+        <div className="max-w-6xl mx-auto px-4 mb-8">
+          <Tabs defaultValue="overview" className="w-full">
+            <TabsList className="grid w-full grid-cols-7">
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="pages">Pages</TabsTrigger>
+              <TabsTrigger value="performance">Performance</TabsTrigger>
+              <TabsTrigger value="security">Security</TabsTrigger>
+              <TabsTrigger value="ai">AI/SEO</TabsTrigger>
+              <TabsTrigger value="accessibility">A11y</TabsTrigger>
+              <TabsTrigger value="tech">Tech Stack</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="overview" className="mt-6">
+              <EnhancedContentDisplay data={mergedData} />
+            </TabsContent>
+
+            <TabsContent value="pages" className="mt-6">
+              <MultiplePagesOverview data={multiData} />
+            </TabsContent>
+
+            <TabsContent value="performance" className="mt-6">
+              {mergedData.performance && <PerformanceMetrics performance={mergedData.performance} />}
+            </TabsContent>
+
+            <TabsContent value="security" className="mt-6">
+              {mergedData.security && mergedData.securitySEO && (
+                <SecurityOverview security={mergedData.security} securitySEO={mergedData.securitySEO} />
+              )}
+            </TabsContent>
+
+            <TabsContent value="ai" className="mt-6">
+              {mergedData.aiOptimization && (
+                <AIOptimizationDisplay 
+                  aiOptimization={mergedData.aiOptimization} 
+                  structuredData={mergedData.structuredData}
+                />
+              )}
+            </TabsContent>
+
+            <TabsContent value="accessibility" className="mt-6">
+              {mergedData.accessibility && <AccessibilityDisplay accessibility={mergedData.accessibility} />}
+            </TabsContent>
+
+            <TabsContent value="tech" className="mt-6">
+              {mergedData.technologies && <TechnologiesDisplay technologies={mergedData.technologies} />}
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
+    );
+  } else {
+    const simpleData = data as SimpleScanData;
+    const seoScore = simpleData.overview?.ai?.score || simpleData.aiOptimization?.score || 75;
+    const favicon = simpleData.meta?.meta?.["og:image"] || simpleData.images?.[0]?.src || null;
+
+    return (
+      <div className="min-h-screen bg-background">
+        {/* Navigation */}
+        <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
+          <div className="container flex h-16 items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="icon" asChild>
+                <Link href="/scans">
+                  <ArrowLeftIcon className="h-5 w-5" />
+                  <span className="sr-only">Back</span>
+                </Link>
+              </Button>
+              <span className="font-bold text-lg tracking-tight">Element Hunter</span>
+            </div>
+            <div className="flex items-center gap-4">
+              <Badge
+                variant={seoScore >= 80 ? "default" : seoScore >= 60 ? "secondary" : "destructive"}
+                className="px-3 py-1 text-base font-semibold"
+              >
+                SEO&nbsp;{seoScore}%
+              </Badge>
+            </div>
+          </div>
+        </nav>
+
+        {/* Header */}
+        <header className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center gap-6 py-8">
+          <div className="flex-shrink-0">
+            {favicon ? (
+              <Image
+                src={favicon}
+                alt="Favicon"
+                width={64}
+                height={64}
+                className="w-16 h-16 rounded-xl border shadow object-cover bg-white"
+              />
+            ) : (
+              <GlobeIcon className="w-16 h-16 text-muted-foreground" />
+            )}
+          </div>
+          <div className="flex-1 min-w-0">
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground truncate">
+              {simpleData.meta?.title || scan.url}
+            </h1>
+            <a
+              href={scan.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-primary/80 hover:underline flex items-center gap-1 mt-1 truncate"
+            >
+              {scan.url}
+              <ExternalLinkIcon className="h-3 w-3" />
+            </a>
+            <div className="flex items-center gap-2 mt-2">
+              <span className="text-xs text-muted-foreground">Scan from {scanDate}</span>
+              <Badge variant="outline">Single page</Badge>
+            </div>
+          </div>
+        </header>
+
+        {/* Quick Stats */}
+        <section className="max-w-6xl mx-auto px-4 grid grid-cols-2 md:grid-cols-6 gap-4 mb-8">
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-xs font-medium flex items-center gap-1">
+                <Brain className="h-3 w-3" />
+                AI Score
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-xl font-bold">{simpleData.aiOptimization?.score || 0}%</div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-xs font-medium flex items-center gap-1">
+                <Shield className="h-3 w-3" />
+                Security
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-xl font-bold">{simpleData.securitySEO?.score || 0}%</div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-xs font-medium flex items-center gap-1">
+                <Zap className="h-3 w-3" />
+                Performance
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-xl font-bold">
+                {simpleData.performance?.domContentLoaded ? `${simpleData.performance.domContentLoaded}ms` : "N/A"}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-xs font-medium flex items-center gap-1">
+                <Eye className="h-3 w-3" />
+                A11y
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-xl font-bold">
+                {(simpleData.accessibility?.ariaLabelsCount || 0) + (simpleData.accessibility?.rolesCount || 0)}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-xs font-medium flex items-center gap-1">
+                <Code className="h-3 w-3" />
+                Tech
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-xl font-bold">
+                {simpleData.overview?.totals?.technologies || Object.values(simpleData.technologies || {}).flat().length}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-xs font-medium flex items-center gap-1">
+                <ImageIcon className="h-3 w-3" />
+                Images
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-xl font-bold">{simpleData.images?.length || 0}</div>
+            </CardContent>
+          </Card>
+        </section>
+
+        {/* Main Content */}
+        <div className="max-w-6xl mx-auto px-4 mb-8">
+          <Tabs defaultValue="content" className="w-full">
+            <TabsList className="grid w-full grid-cols-6">
+              <TabsTrigger value="content">Content</TabsTrigger>
+              <TabsTrigger value="performance">Performance</TabsTrigger>
+              <TabsTrigger value="security">Security</TabsTrigger>
+              <TabsTrigger value="ai">AI/SEO</TabsTrigger>
+              <TabsTrigger value="accessibility">A11y</TabsTrigger>
+              <TabsTrigger value="tech">Tech Stack</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="content" className="mt-6">
+              <EnhancedContentDisplay data={simpleData} />
+            </TabsContent>
+
+            <TabsContent value="performance" className="mt-6">
+              {simpleData.performance && <PerformanceMetrics performance={simpleData.performance} />}
+            </TabsContent>
+
+            <TabsContent value="security" className="mt-6">
+              {simpleData.security && simpleData.securitySEO && (
+                <SecurityOverview security={simpleData.security} securitySEO={simpleData.securitySEO} />
+              )}
+            </TabsContent>
+
+            <TabsContent value="ai" className="mt-6">
+              {simpleData.aiOptimization && (
+                <AIOptimizationDisplay 
+                  aiOptimization={simpleData.aiOptimization} 
+                  structuredData={simpleData.structuredData}
+                />
+              )}
+            </TabsContent>
+
+            <TabsContent value="accessibility" className="mt-6">
+              {simpleData.accessibility && <AccessibilityDisplay accessibility={simpleData.accessibility} />}
+            </TabsContent>
+
+            <TabsContent value="tech" className="mt-6">
+              {simpleData.technologies && <TechnologiesDisplay technologies={simpleData.technologies} />}
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
+    );
+  }
+}
+
+function renderLegacyScanDetail(scan: any, rawData: ScanData) {
   let keywords: string[] = [];
   if (rawData.meta && rawData.meta.keywords) {
     if (Array.isArray(rawData.meta.keywords)) {
@@ -103,6 +459,15 @@ export default async function ScanDetailPage({ params }: PageProps) {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Legacy Format Notice */}
+      <div className="bg-yellow-50 dark:bg-yellow-950/20 border-b">
+        <div className="max-w-4xl mx-auto px-4 py-2">
+          <p className="text-sm text-yellow-800 dark:text-yellow-200">
+            This scan uses the legacy data format. Some advanced features may not be available.
+          </p>
+        </div>
+      </div>
+
       {/* Navbar sticky */}
       <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
         <div className="container flex h-16 items-center justify-between gap-4">
@@ -166,6 +531,7 @@ export default async function ScanDetailPage({ params }: PageProps) {
             <span className="text-xs text-muted-foreground">
               Scan from {scanDate}
             </span>
+            <Badge variant="outline">Legacy format</Badge>
             {score >= 80 && <Badge variant="default">Excellent</Badge>}
             {score < 80 && score >= 60 && (
               <Badge variant="secondary">Average</Badge>
